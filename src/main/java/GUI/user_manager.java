@@ -1,5 +1,6 @@
 package GUI;
 
+import GUI.config;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -52,7 +53,7 @@ public class user_manager extends JFrame {
     }
 
     private void loadUserData() {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             String sql = "SELECT id, email, pseudo, role FROM users";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -81,7 +82,7 @@ public class user_manager extends JFrame {
             return;
         }
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             String sql = "UPDATE users SET pseudo = ?, role = ? WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, pseudo);
@@ -103,7 +104,7 @@ public class user_manager extends JFrame {
         }
 
         int userId = (int) tableModel.getValueAt(selectedRow, 0);
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             String sql = "DELETE FROM users WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);

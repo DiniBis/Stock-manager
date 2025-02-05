@@ -1,5 +1,6 @@
 package GUI;
 
+import GUI.config;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -58,8 +59,8 @@ public class store_manager extends JFrame {
     }
 
     private void loadStoreData() {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
-            String sql = "SELECT id, name FROM stores";
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
+            String sql = "SELECT id, name FROM store";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             tableModel.setRowCount(0);
@@ -78,7 +79,7 @@ public class store_manager extends JFrame {
             return;
         }
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             String sql = "INSERT INTO stores (name) VALUES (?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, storeName);
@@ -98,7 +99,7 @@ public class store_manager extends JFrame {
         }
 
         int storeId = (int) tableModel.getValueAt(selectedRow, 0);
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             String sql = "DELETE FROM stores WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, storeId);
@@ -119,7 +120,7 @@ public class store_manager extends JFrame {
         }
 
         int storeId = (int) tableModel.getValueAt(selectedRow, 0);
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             String sql = "INSERT INTO store_employees (store_id, email) VALUES (?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, storeId);

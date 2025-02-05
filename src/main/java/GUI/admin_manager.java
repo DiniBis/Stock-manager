@@ -3,7 +3,6 @@ package GUI;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.sql.*;
 
 public class admin_manager extends JFrame {
@@ -19,20 +18,31 @@ public class admin_manager extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Définition des couleurs
+        Color bgColor = new Color(30, 30, 30);
+        Color btnColor = new Color(255, 140, 0);
+        Color textColor = Color.WHITE;
+
+        getContentPane().setBackground(bgColor);
+
         // Table des administrateurs
         tableModel = new DefaultTableModel(new String[]{"ID", "Email"}, 0);
         adminTable = new JTable(tableModel);
-        loadAdminData();
+        adminTable.setBackground(bgColor);
+        adminTable.setForeground(textColor);
         add(new JScrollPane(adminTable), BorderLayout.CENTER);
+        loadAdminData();
 
         // Panel bas
         JPanel bottomPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-        emailField = new JTextField();
-        addAdminButton = new JButton("Ajouter Admin");
-        removeAdminButton = new JButton("Supprimer Admin");
-        backButton = new JButton("Retour");
+        bottomPanel.setBackground(bgColor);
 
-        bottomPanel.add(new JLabel("Email: "));
+        emailField = new JTextField();
+        addAdminButton = createStyledButton("Ajouter Admin", btnColor);
+        removeAdminButton = createStyledButton("Supprimer Admin", btnColor);
+        backButton = createStyledButton("Retour", btnColor);
+
+        bottomPanel.add(new JLabel("Email: ")).setForeground(textColor);
         bottomPanel.add(emailField);
         bottomPanel.add(addAdminButton);
         bottomPanel.add(removeAdminButton);
@@ -48,8 +58,18 @@ public class admin_manager extends JFrame {
         setVisible(true);
     }
 
+    private JButton createStyledButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setBackground(bgColor);
+        button.setForeground(Color.BLACK);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createRaisedBevelBorder());
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        return button;
+    }
+
     private void loadAdminData() {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             String sql = "SELECT id, email FROM users WHERE role = 'admin'";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -69,7 +89,7 @@ public class admin_manager extends JFrame {
             return;
         }
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             String sql = "UPDATE users SET role = 'admin' WHERE email = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, email);
@@ -94,7 +114,7 @@ public class admin_manager extends JFrame {
         }
 
         int adminId = (int) tableModel.getValueAt(selectedRow, 0);
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             String sql = "UPDATE users SET role = 'employee' WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, adminId);

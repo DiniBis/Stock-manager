@@ -2,8 +2,6 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class home extends JFrame {
     private JButton userManagementButton;
@@ -19,11 +17,18 @@ public class home extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new GridLayout(5, 1, 10, 10));
 
-        userManagementButton = new JButton("Gestion des utilisateurs");
-        adminManagementButton = new JButton("Gestion des administrateurs");
-        inventoryManagementButton = new JButton("Gestion de l'inventaire");
-        storeManagementButton = new JButton("Gestion des magasins");
-        logoutButton = new JButton("Déconnexion");
+        // Définition des couleurs
+        Color bgColor = new Color(30, 30, 30);
+        Color btnColor = new Color(255, 140, 0);
+        Color textColor = Color.WHITE;
+
+        getContentPane().setBackground(bgColor);
+
+        userManagementButton = createStyledButton("Gestion des utilisateurs", btnColor);
+        adminManagementButton = createStyledButton("Gestion des administrateurs", btnColor);
+        inventoryManagementButton = createStyledButton("Gestion de l'inventaire", btnColor);
+        storeManagementButton = createStyledButton("Gestion des magasins", btnColor);
+        logoutButton = createStyledButton("Déconnexion", btnColor);
 
         add(userManagementButton);
         add(adminManagementButton);
@@ -38,6 +43,16 @@ public class home extends JFrame {
         logoutButton.addActionListener(e -> logout());
 
         setVisible(true);
+    }
+
+    private JButton createStyledButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setBackground(bgColor);
+        button.setForeground(Color.BLACK);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createRaisedBevelBorder());
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        return button;
     }
 
     private void openUserManagement() {
@@ -64,6 +79,4 @@ public class home extends JFrame {
         new login_form();
         dispose();
     }
-
 }
-

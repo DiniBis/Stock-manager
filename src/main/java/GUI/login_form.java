@@ -3,7 +3,6 @@ package GUI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.*;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -19,45 +18,54 @@ public class login_form extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new GridLayout(3, 2, 30, 30));
 
+        // Définition des couleurs
+        Color bgColor = new Color(30, 30, 30);
+        Color btnColor = new Color(255, 140, 0);
+        Color textColor = Color.WHITE;
+
+        getContentPane().setBackground(bgColor);
+
         // Champs de saisie
         usernameField = new JTextField();
         passwordField = new JPasswordField();
-        loginButton = new JButton("Se connecter");
-        registerButton = new JButton("Créer un compte");
+        loginButton = createStyledButton("Se connecter", btnColor);
+        registerButton = createStyledButton("Créer un compte", btnColor);
+
+        JLabel emailLabel = new JLabel("    Mail:");
+        emailLabel.setForeground(textColor);
+        JLabel passwordLabel = new JLabel("    Mot de passe:");
+        passwordLabel.setForeground(textColor);
 
         // Ajout des composants
-        add(new JLabel("    Mail:"));
+        add(emailLabel);
         add(usernameField);
-        add(new JLabel("    Mot de passe:"));
+        add(passwordLabel);
         add(passwordField);
         add(loginButton);
         add(registerButton);
 
-        // Écouteur du bouton de connexion
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                login();
-            }
-        });
-
-        // Écouteur du bouton d'inscription
-        registerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                register();
-            }
-        });
+        // Écouteurs d'événements
+        loginButton.addActionListener(e -> login());
+        registerButton.addActionListener(e -> register());
 
         setVisible(true);
     }
 
-    // Méthode de connexion
+    private JButton createStyledButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setBackground(bgColor);
+        button.setForeground(Color.BLACK);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createRaisedBevelBorder());
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        return button;
+    }
+
     private void login() {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/2java", "root", "")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             String sql = "SELECT password FROM users WHERE email = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
@@ -69,7 +77,6 @@ public class login_form extends JFrame {
                     JOptionPane.showMessageDialog(this, "Connexion réussie !");
                     new home(username);
                     dispose();
-                    
                 } else {
                     JOptionPane.showMessageDialog(this, "Mot de passe incorrect.");
                 }
@@ -82,7 +89,6 @@ public class login_form extends JFrame {
         }
     }
 
-    // Méthode d'inscription
     private void register() {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
@@ -92,7 +98,7 @@ public class login_form extends JFrame {
             return;
         }
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydatabase", "root", "password")) {
+        try (Connection conn = DriverManager.getConnection(config.link, config.login, config.password)) {
             // Vérifier si l'email est whitelisted
             String checkWhitelist = "SELECT * FROM whitelist WHERE email = ?";
             PreparedStatement checkStmt = conn.prepareStatement(checkWhitelist);
